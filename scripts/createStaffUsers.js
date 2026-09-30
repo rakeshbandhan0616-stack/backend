@@ -18,16 +18,12 @@ dns.setDefaultResultOrder("ipv4first");
 
 /* =========================================================
    STAFF USERS
+   Super Admin is intentionally NOT included here.
+   Super Admin is created separately using:
+   createSuperAdmin.js
    ========================================================= */
 
 const STAFF_USERS = [
-  {
-    name: "Super Admin",
-    email: "superadmin@jihaancosmetics.com",
-    password: "SuperAdmin@123",
-    role: "superadmin",
-  },
-
   {
     name: "Admin",
     email: "admin@jihaancosmetics.com",
@@ -86,6 +82,11 @@ const createStaffUsers = async () => {
       "MongoDB connected successfully."
     );
 
+    console.log(
+      "Connected database:",
+      mongoose.connection.name
+    );
+
     console.log("");
 
     /* -----------------------------------------------------
@@ -101,25 +102,31 @@ const createStaffUsers = async () => {
         `Processing ${staff.role}: ${email}`
       );
 
+      /* ---------------------------------------------------
+         CHECK EXISTING USER
+         --------------------------------------------------- */
+
       const existingUser = await User.findOne({
         email,
       });
 
-      const hashedPassword =
-        await bcrypt.hash(
-          staff.password,
-          12
-        );
+      /* ---------------------------------------------------
+         HASH PASSWORD
+         --------------------------------------------------- */
+
+      const hashedPassword = await bcrypt.hash(
+        staff.password,
+        12
+      );
 
       /* ---------------------------------------------------
-         EXISTING USER
+         UPDATE EXISTING USER
          --------------------------------------------------- */
 
       if (existingUser) {
         existingUser.name = staff.name;
         existingUser.email = email;
-        existingUser.password =
-          hashedPassword;
+        existingUser.password = hashedPassword;
         existingUser.role = staff.role;
         existingUser.isActive = true;
 
@@ -128,6 +135,8 @@ const createStaffUsers = async () => {
         console.log(
           `✓ Updated ${staff.role}: ${email}`
         );
+
+        console.log("");
 
         continue;
       }
@@ -147,31 +156,24 @@ const createStaffUsers = async () => {
       console.log(
         `✓ Created ${staff.role}: ${newUser.email}`
       );
+
+      console.log("");
     }
 
     /* =====================================================
        RESULT
        ===================================================== */
 
-    console.log("");
     console.log(
       "========================================"
     );
+
     console.log(
       "       STAFF USERS READY"
     );
+
     console.log(
       "========================================"
-    );
-
-    console.log("");
-
-    console.log("SUPER ADMIN");
-    console.log(
-      "Email:    superadmin@jihaancosmetics.com"
-    );
-    console.log(
-      "Password: SuperAdmin@123"
     );
 
     console.log("");
@@ -186,7 +188,7 @@ const createStaffUsers = async () => {
 
     console.log("");
 
-    console.log("ACCOUNTS");
+    console.log("ACCOUNTS MANAGER");
     console.log(
       "Email:    accounts@jihaancosmetics.com"
     );
@@ -196,7 +198,7 @@ const createStaffUsers = async () => {
 
     console.log("");
 
-    console.log("LOGISTICS");
+    console.log("LOGISTICS MANAGER");
     console.log(
       "Email:    logistics@jihaancosmetics.com"
     );
@@ -209,9 +211,15 @@ const createStaffUsers = async () => {
     console.log(
       "========================================"
     );
+
     console.log(
       "Staff setup completed successfully."
     );
+
+    console.log(
+      "Super Admin was NOT modified."
+    );
+
     console.log(
       "========================================"
     );
@@ -229,14 +237,18 @@ const createStaffUsers = async () => {
     );
 
     process.exitCode = 0;
+
   } catch (error) {
     console.error("");
+
     console.error(
       "========================================"
     );
+
     console.error(
       "       STAFF SETUP FAILED"
     );
+
     console.error(
       "========================================"
     );
