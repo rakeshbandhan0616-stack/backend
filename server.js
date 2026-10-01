@@ -46,6 +46,7 @@ import orderRoutes from "./routes/orderRoutes.js";
 import adminOrderRoutes from "./routes/adminOrderRoutes.js";
 import cartRoutes from "./routes/cartRoutes.js";
 import forgotPasswordRoutes from "./routes/forgotPasswordRoutes.js";
+
 // --------------------------------------------------
 // Accounts dashboard
 // --------------------------------------------------
@@ -73,11 +74,10 @@ import analyticsRoutes from "./routes/analyticsRoutes.js";
 import salesReportRoutes from "./routes/salesReportRoutes.js";
 import reviewRoutes from "./routes/reviewRoutes.js";
 
-
-//notification
+// notification
 import notificationRoutes from "./routes/notificationRoutes.js";
 
-//accounts admin 
+// accounts admin
 import adminAccountRoutes from "./routes/adminAccountRoutes.js";
 
 // --------------------------------------------------
@@ -86,6 +86,29 @@ import adminAccountRoutes from "./routes/adminAccountRoutes.js";
 
 dns.setServers(["8.8.8.8", "8.8.4.4"]);
 dns.setDefaultResultOrder("ipv4first");
+
+// --------------------------------------------------
+// MongoDB SRV DNS diagnostic
+// --------------------------------------------------
+
+// Diagnostic only: checks whether the GoDaddy runtime can
+// resolve the MongoDB Atlas SRV record before Mongoose connects.
+dns.resolveSrv(
+  "_mongodb._tcp.cluster0.vn12zxu.mongodb.net",
+  (error, addresses) => {
+    if (error) {
+      console.error(
+        "MongoDB SRV DNS TEST FAILED:",
+        error.message
+      );
+    } else {
+      console.log(
+        "MongoDB SRV DNS TEST SUCCESS:",
+        addresses
+      );
+    }
+  }
+);
 
 // --------------------------------------------------
 // App configuration
@@ -106,33 +129,39 @@ const allowedOrigins = [
   // ------------------------------------------------
   // Local development
   // ------------------------------------------------
+
   "http://localhost:5173",
   "http://localhost:5174",
 
   // ------------------------------------------------
   // Existing Netlify frontend
   // ------------------------------------------------
+
   "https://jihaan-cosmetics.netlify.app",
 
   // ------------------------------------------------
   // Production custom domain
   // ------------------------------------------------
+
   "https://jinicosmetics.com",
   "https://www.jinicosmetics.com",
 
   // ------------------------------------------------
   // Current GoDaddy preview URL
   // ------------------------------------------------
+
   "https://1zt0y3t6bu.preview.c39.airoapp.ai",
 
   // ------------------------------------------------
   // Previous GoDaddy preview URL
   // ------------------------------------------------
+
   "https://mzuc7ikh7j.c38.airoapp.ai",
 
   // ------------------------------------------------
   // Environment variable
   // ------------------------------------------------
+
   process.env.FRONTEND_URL,
 ].filter(Boolean);
 
@@ -176,12 +205,12 @@ app.use(
 
       const isGoDaddyPreview =
         /^https:\/\/[a-z0-9]+\.preview\.c\d+\.airoapp\.ai$/i.test(
-          origin,
+          origin
         );
 
       if (isGoDaddyPreview) {
         console.log(
-          `CORS allowed GoDaddy preview: ${origin}`,
+          `CORS allowed GoDaddy preview: ${origin}`
         );
 
         return callback(null, true);
@@ -215,7 +244,7 @@ app.use(
       "Accept",
       "X-Requested-With",
     ],
-  }),
+  })
 );
 
 // --------------------------------------------------
@@ -225,14 +254,14 @@ app.use(
 app.use(
   express.json({
     limit: "10mb",
-  }),
+  })
 );
 
 app.use(
   express.urlencoded({
     extended: true,
     limit: "10mb",
-  }),
+  })
 );
 
 // --------------------------------------------------
@@ -248,8 +277,8 @@ app.use(cookieParser());
 app.use(
   "/uploads",
   express.static(
-    path.join(__dirname, "uploads"),
-  ),
+    path.join(__dirname, "uploads")
+  )
 );
 
 // --------------------------------------------------
@@ -296,35 +325,38 @@ app.use("/api/auth", authRoutes);
 
 app.use(
   "/api/admin/users",
-  adminUserRoutes,
+  adminUserRoutes
 );
 
-
-//notification
+// notification
 app.use(
   "/api/notifications",
-  notificationRoutes,
+  notificationRoutes
 );
 
-
-//accomnts admin 
+// accounts admin
 app.use(
   "/api/admin/account",
-  adminAccountRoutes,
+  adminAccountRoutes
 );
+
 // ==================================================
 // Partners
 // ==================================================
 
 app.use(
   "/api/partners",
-  partnerRoutes,
+  partnerRoutes
 );
 
 app.use(
   "/api/admin/partners",
-  adminPartnerRoutes,
+  adminPartnerRoutes
 );
+
+// ==================================================
+// Forgot Password
+// ==================================================
 
 app.use(
   "/api",
@@ -337,42 +369,42 @@ app.use(
 
 app.use(
   "/api/categories",
-  categoryRoutes,
+  categoryRoutes
 );
 
 app.use(
   "/api/category-manager",
-  categoryManagerRoutes,
+  categoryManagerRoutes
 );
 
 app.use(
   "/api/hero-banners",
-  heroBannerRoutes,
+  heroBannerRoutes
 );
 
 app.use(
   "/api/offers",
-  offerRoutes,
+  offerRoutes
 );
 
 app.use(
   "/api/new-arrivals",
-  newArrivalRoutes,
+  newArrivalRoutes
 );
 
 app.use(
   "/api/products",
-  productRoutes,
+  productRoutes
 );
 
 app.use(
   "/api/brands",
-  brandRoutes,
+  brandRoutes
 );
 
 app.use(
   "/api/beauty-stories",
-  beautyStoryRoutes,
+  beautyStoryRoutes
 );
 
 // ==================================================
@@ -381,17 +413,17 @@ app.use(
 
 app.use(
   "/api/account",
-  accountRoutes,
+  accountRoutes
 );
 
 app.use(
   "/api/orders",
-  orderRoutes,
+  orderRoutes
 );
 
 app.use(
   "/api/cart",
-  cartRoutes,
+  cartRoutes
 );
 
 // ==================================================
@@ -400,7 +432,7 @@ app.use(
 
 app.use(
   "/api/admin/orders",
-  adminOrderRoutes,
+  adminOrderRoutes
 );
 
 // ==================================================
@@ -409,7 +441,7 @@ app.use(
 
 app.use(
   "/api/accounts-dashboard",
-  accountsDashboardRoutes,
+  accountsDashboardRoutes
 );
 
 // ==================================================
@@ -418,7 +450,7 @@ app.use(
 
 app.use(
   "/api/logistics-dashboard",
-  logisticsDashboardRoutes,
+  logisticsDashboardRoutes
 );
 
 // ==================================================
@@ -427,12 +459,12 @@ app.use(
 
 app.use(
   "/api/contact",
-  contactRoutes,
+  contactRoutes
 );
 
 app.use(
   "/api/admin/contact",
-  adminContactRoutes,
+  adminContactRoutes
 );
 
 // ==================================================
@@ -441,17 +473,17 @@ app.use(
 
 app.use(
   "/api/admin/analytics",
-  analyticsRoutes,
+  analyticsRoutes
 );
 
 app.use(
   "/api/admin/sales-report",
-  salesReportRoutes,
+  salesReportRoutes
 );
 
 app.use(
   "/api/admin/reviews",
-  reviewRoutes,
+  reviewRoutes
 );
 
 // --------------------------------------------------
@@ -484,7 +516,7 @@ app.use(
         error?.message ||
         "Internal server error",
     });
-  },
+  }
 );
 
 // --------------------------------------------------
@@ -499,20 +531,20 @@ const startServer = async () => {
 
     if (!process.env.MONGO_URI) {
       throw new Error(
-        "MONGO_URI is missing in environment variables",
+        "MONGO_URI is missing in environment variables"
       );
     }
 
     if (!process.env.JWT_SECRET) {
       console.warn(
-        "Warning: JWT_SECRET is missing in environment variables",
+        "Warning: JWT_SECRET is missing in environment variables"
       );
     }
 
     if (!process.env.FRONTEND_URL) {
       console.warn(
         "Warning: FRONTEND_URL is missing. " +
-          "Production CORS will use the hard-coded allowed origins.",
+          "Production CORS will use the hard-coded allowed origins."
       );
     }
 
@@ -531,57 +563,59 @@ const startServer = async () => {
       "0.0.0.0",
       () => {
         console.log("----------------------------------------");
+
         console.log(
-          "Jihaan Beauty API started successfully",
+          "Jihaan Beauty API started successfully"
         );
 
         console.log(
           `Environment: ${
             process.env.NODE_ENV ||
             "development"
-          }`,
+          }`
         );
 
         console.log(
-          `Server running on port: ${PORT}`,
+          `Server running on port: ${PORT}`
         );
 
         console.log(
           `Frontend URL: ${
             process.env.FRONTEND_URL ||
             "https://jinicosmetics.com"
-          }`,
+          }`
         );
 
         console.log(
-          `API URL: http://localhost:${PORT}`,
+          `API URL: http://localhost:${PORT}`
         );
 
         console.log(
-          `Health URL: http://localhost:${PORT}/health`,
+          `Health URL: http://localhost:${PORT}/health`
         );
 
         console.log(
-          `API Health URL: http://localhost:${PORT}/api/health`,
+          `API Health URL: http://localhost:${PORT}/api/health`
         );
 
         console.log(
-          `Uploads URL: http://localhost:${PORT}/uploads`,
+          `Uploads URL: http://localhost:${PORT}/uploads`
         );
 
         console.log("----------------------------------------");
-      },
+      }
     );
   } catch (error) {
     console.error("----------------------------------------");
+
     console.error(
-      "Server startup failed:",
+      "Server startup failed:"
     );
 
     console.error(
       error instanceof Error
         ? error.message
-        : error,
+        : error
     );
 
     console.error("----------------------------------------");
